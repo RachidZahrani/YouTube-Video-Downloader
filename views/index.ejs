@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>YouTube Downloader</title>
+</head>
+
+<body class="">
+    <div class="min-h-screen flex items-center justify-center p-4">
+        <div class="bg-white/90 backdrop-blur-sm rounded-2xl shadow-2xl p-8 max-w-md w-full">
+            <div class="flex items-center justify-center mb-6">
+                <svg class="w-10 h-10 text-purple-600 mr-2" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/>
+                </svg>
+                <h2 class="text-3xl font-bold bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">YouTube Downloader</h2>
+            </div>
+            <div class="space-y-4">
+                <div class="relative group">
+                    <input id="url" type="text" placeholder="Paste YouTube URL here..."
+                        class="w-full px-4 py-3 border-2 border-purple-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all bg-white/50 backdrop-blur-sm" />
+                    <div class="absolute right-3 top-3 text-purple-500 group-hover:scale-110 transition-transform">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- Progress Bar Container -->
+                <div id="progressContainer" class="hidden">
+                    <div class="relative pt-1">
+                        <div class="flex mb-2 items-center justify-between">
+                            <div>
+                                <span class="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-purple-600 bg-purple-200">
+                                    Processing
+                                </span>
+                            </div>
+                            <div class="text-right">
+                                <span id="progressText" class="text-xs font-semibold inline-block text-purple-600">
+                                    0%
+                                </span>
+                            </div>
+                        </div>
+                        <div class="overflow-hidden h-2 mb-4 text-xs flex rounded bg-purple-200">
+                            <div id="progressBar" class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-purple-500 w-0 transition-all duration-300 ease-out"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Video Details Display Section -->
+                <div id="videoDetails" class="hidden bg-purple-50 rounded-lg p-4">
+                    <h3 class="text-xl font-medium text-purple-800 mb-3">Video Details:</h3>
+                    <div class="space-y-2">
+                        <img id="videoThumbnail" src="" alt="Video Thumbnail"
+                            class="w-full h-64 object-cover mb-3 rounded-lg shadow-lg transform hover:scale-[1.02] transition-transform" />
+                        <p id="videoTitle" class="text-purple-900 font-semibold text-lg"></p>
+                        <p id="videoSize" class="text-purple-700"></p>
+                    </div>
+                    <h3 class="text-sm font-medium text-purple-700 mt-6 mb-3">Select Format:</h3>
+                    <div class="space-y-2">
+                        <label class="flex items-center space-x-3 cursor-pointer hover:bg-purple-100 p-2 rounded-lg transition-colors">
+                            <input type="radio" name="format" id="video" class="form-radio text-purple-600" checked>
+                            <span class="text-purple-700">Video (MP4)</span>
+                        </label>
+                        <label class="flex items-center space-x-3 cursor-pointer hover:bg-purple-100 p-2 rounded-lg transition-colors">
+                            <input type="radio" name="format" id="audio" class="form-radio text-purple-600">
+                            <span class="text-purple-700">Audio (MP3)</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Buttons -->
+                <button id="searchBtn"
+                    class="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-medium py-3 rounded-lg transition-all duration-300 transform hover:scale-[1.02] flex items-center justify-center space-x-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                    <span>Search</span>
+                </button>
+
+                <button id="downloadBtn"
+                    class="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-medium py-3 rounded-lg transition-all duration-300 transform hover:scale-[1.02] flex items-center justify-center space-x-2 hidden">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                    </svg>
+                    <span>Download</span>
+                </button>
+            </div>
+        </div>
+    </div>
+    <script>
+        let isDownloading = false;
+        let progressInterval;
+
+        function startFakeProgress() {
+            const progressContainer = document.getElementById('progressContainer');
+            const progressBar = document.getElementById('progressBar');
+            const progressText = document.getElementById('progressText');
+            let progress = 0;
+
+            progressContainer.classList.remove('hidden');
+            
+            progressInterval = setInterval(() => {
+                if (progress < 90) {
+                    progress += Math.random() * 15;
+                    if (progress > 90) progress = 90;
+                    progressBar.style.width = `${progress}%`;
+                    progressText.textContent = `${Math.round(progress)}%`;
+                }
+            }, 500);
+        }
+
+        function completeProgress() {
+            clearInterval(progressInterval);
+            const progressBar = document.getElementById('progressBar');
+            const progressText = document.getElementById('progressText');
+            progressBar.style.width = '100%';
+            progressText.textContent = '100%';
+            
+            setTimeout(() => {
+                document.getElementById('progressContainer').classList.add('hidden');
+                progressBar.style.width = '0%';
+                progressText.textContent = '0%';
+            }, 1000);
+        }
+
+        document.getElementById('searchBtn').addEventListener('click', async () => {
+            if (isDownloading) {
+                alert("Please wait for the current download to finish.");
+                return;
+            }
+
+            const url = document.getElementById('url').value;
+            if (!url) {
+                alert("Please enter a YouTube URL.");
+                return;
+            }
+
+            const searchBtn = document.getElementById('searchBtn');
+            const downloadBtn = document.getElementById('downloadBtn');
+
+            searchBtn.disabled = true;
+            downloadBtn.disabled = true;
+            startFakeProgress();
+
+            try {
+                const response = await fetch('/search', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ url })
+                });
+
+                const data = await response.json();
+                if (data.error) {
+                    alert(data.error);
+                } else {
+                    const videoDetails = data.videoDetails;
+                    document.getElementById('videoThumbnail').src = videoDetails.thumbnail;
+                    document.getElementById('videoTitle').textContent = videoDetails.title;
+                    document.getElementById('videoSize').textContent = `Video Size: ${(videoDetails.size.video / (1024 * 1024)).toFixed(2)} MB | Audio Size: ${(videoDetails.size.audio / (1024 * 1024)).toFixed(2)} MB`;
+
+                    document.getElementById('videoDetails').classList.remove('hidden');
+                    document.getElementById('downloadBtn').classList.remove('hidden');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Something went wrong. Please try again.');
+            } finally {
+                completeProgress();
+                searchBtn.disabled = false;
+                downloadBtn.disabled = false;
+            }
+        });
+
+        document.getElementById('downloadBtn').addEventListener('click', async () => {
+            const url = document.getElementById('url').value;
+            const format = document.getElementById('video').checked ? 'video' : 'audio';
+            const downloadBtn = document.getElementById('downloadBtn');
+
+            if (isDownloading) {
+                alert("Download is already in progress.");
+                return;
+            }
+
+            isDownloading = true;
+            downloadBtn.disabled = true;
+            startFakeProgress();
+
+            try {
+                const response = await fetch('/download', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ url, format })
+                });
+
+                const data = await response.json();
+                if (data.error) {
+                    alert(data.error);
+                } else {
+                    const downloadUrl = data.file;
+                    const link = document.createElement('a');
+                    link.href = downloadUrl;
+                    link.download = '';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Something went wrong. Please try again.');
+            } finally {
+                completeProgress();
+                isDownloading = false;
+                downloadBtn.disabled = false;
+            }
+        });
+    </script>
+</body>
+
+</html>
